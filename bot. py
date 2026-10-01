@@ -1,38 +1,42 @@
 import os
 import random
+
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
+
 TOKEN = os.environ["BOT_TOKEN"]
+
 
 QUESTIONS = [
     {
-        "question": "A body starts from rest and accelerates uniformly at 2 m/s². What is its velocity after 5 s?",
-        "options": ["5 m/s", "10 m/s", "12 m/s", "20 m/s"],
-        "answer": 1
+        "question": "A body is moving with uniform velocity. What is its acceleration?",
+        "options": ["A) 0", "B) 1 m/s²", "C) 9.8 m/s²", "D) Depends on mass"],
+        "answer": "A",
     },
     {
-        "question": "The SI unit of force is:",
-        "options": ["Joule", "Watt", "Newton", "Pascal"],
-        "answer": 2
-    }
+        "question": "Which organelle is known as the powerhouse of the cell?",
+        "options": ["A) Nucleus", "B) Ribosome", "C) Mitochondria", "D) Golgi apparatus"],
+        "answer": "C",
+    },
 ]
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🧠 NEET Quiz Master\n\nUse /quiz to start a quiz!"
+        "👋 Welcome to NEET Quiz Bot!\n\n"
+        "Use /quiz to get a random question."
     )
+
 
 async def quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
     q = random.choice(QUESTIONS)
 
-    await update.message.reply_poll(
-        question=q["question"],
-        options=q["options"],
-        type="quiz",
-        correct_option_id=q["answer"],
-        is_anonymous=False
-    )
+    text = f"🧠 NEET QUIZ\n\n{q['question']}\n\n"
+    text += "\n".join(q["options"])
+
+    await update.message.reply_text(text)
+
 
 def main():
     app = Application.builder().token(TOKEN).build()
@@ -40,7 +44,9 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("quiz", quiz))
 
+    print("Bot is running...")
     app.run_polling()
+
 
 if __name__ == "__main__":
     main()
