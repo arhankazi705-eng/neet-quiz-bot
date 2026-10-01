@@ -1,0 +1,46 @@
+import os
+import random
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
+
+TOKEN = os.environ["BOT_TOKEN"]
+
+QUESTIONS = [
+    {
+        "question": "A body starts from rest and accelerates uniformly at 2 m/s². What is its velocity after 5 s?",
+        "options": ["5 m/s", "10 m/s", "12 m/s", "20 m/s"],
+        "answer": 1
+    },
+    {
+        "question": "The SI unit of force is:",
+        "options": ["Joule", "Watt", "Newton", "Pascal"],
+        "answer": 2
+    }
+]
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🧠 NEET Quiz Master\n\nUse /quiz to start a quiz!"
+    )
+
+async def quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = random.choice(QUESTIONS)
+
+    await update.message.reply_poll(
+        question=q["question"],
+        options=q["options"],
+        type="quiz",
+        correct_option_id=q["answer"],
+        is_anonymous=False
+    )
+
+def main():
+    app = Application.builder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("quiz", quiz))
+
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
